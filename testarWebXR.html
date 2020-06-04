@@ -7,6 +7,8 @@
 <script>
 
 let xrRefSpace=null;
+let gl=null;
+let renderer=null;
 
 function initAR()
 {
@@ -33,9 +35,31 @@ function initAR()
             });
       }
 	  
+      function initGL() {
+        if (gl)
+          return;
+
+        gl = createWebGLContext({
+          xrCompatible: true
+        });
+        document.body.appendChild(gl.canvas);
+
+        function onResize() {
+          gl.canvas.width = gl.canvas.clientWidth * window.devicePixelRatio;
+          gl.canvas.height = gl.canvas.clientHeight * window.devicePixelRatio;
+        }
+        window.addEventListener('resize', onResize);
+        onResize();
+
+        renderer = new Renderer(gl);
+
+      }	  
+
 function onSessionStarted(xrSession) {
 
-  xrSession.requestReferenceSpace('local-floor')
+initGL();
+
+  xrSession.requestReferenceSpace('local')
   .then((refSpace) => {
     xrRefSpace = refSpace;
     xrSession.requestAnimationFrame(onXRFrame);
