@@ -25,7 +25,7 @@ function initAR()
         // environment will be visible either via video passthrough or a
         // transparent display. This may be presented either in a headset or
         // fullscreen on a mobile device.
-        return navigator.xr.requestSession('immersive-ar')
+        navigator.xr.requestSession('immersive-ar')
             .then((session) => {
               session.isImmersive = true;
 			  console.log("Session requested!");
