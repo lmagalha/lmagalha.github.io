@@ -6,12 +6,12 @@
 <body>
 <script>
 
-navigator.xr.supportsSession('immersive-ar').then(() => 
-{ console.log("AR content is supported!"); 
-})
-.catch((reason) => 
-{ console.log("AR content is not supported: " + reason); 
-});
+const supported = await navigator.xr.isSessionSupported('immersive-ar');
+if (supported) {
+ console.log("AR content is supported!");
+} else {
+console.log("AR content is not supported: ");
+}
 
 
 </script>
