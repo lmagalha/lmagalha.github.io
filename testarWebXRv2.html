@@ -49,8 +49,8 @@ function onSessionStarted(xrSession) {
 
     gl = renderer.getContext();
     
-    gl.setCompatibleXRDevice(xrSession.device);
-	//gl.makeXRCompatible();
+    //gl.setCompatibleXRDevice(xrSession.device);
+	gl.makeXRCompatible();
   
     session.baseLayer = new XRWebGLLayer(xrSession, gl);
 
