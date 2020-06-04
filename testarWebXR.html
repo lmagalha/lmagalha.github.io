@@ -1,0 +1,20 @@
+<html>
+<head>
+
+</head>
+
+<body>
+<script>
+
+navigator.xr.supportsSession('immersive-ar').then(() => 
+{ console.log("AR content is supported!"); 
+})
+.catch((reason) => 
+{ console.log("AR content is not supported: " + reason); 
+});
+
+
+</script>
+</body>
+
+</html>
