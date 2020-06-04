@@ -1,0 +1,105 @@
+<html>
+<head>
+
+</head>
+
+<body>
+<script>
+
+let xrRefSpace=null;
+let gl=null;
+let renderer=null;
+let scene=null;
+let camera=null;
+
+function initAR()
+{
+
+        if (navigator.xr) {
+          navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
+            console.log("AR content is supported!");
+			onRequestSession();
+          })
+		  .catch((reason) => { console.log("AR content is not supported: " + reason); });
+        }
+}
+
+      function onRequestSession() {
+        // Requests an 'immersive-ar' session, which ensures that the users
+        // environment will be visible either via video passthrough or a
+        // transparent display. This may be presented either in a headset or
+        // fullscreen on a mobile device.
+        navigator.xr.requestSession('immersive-ar')
+            .then((session) => {
+              session.isImmersive = true;
+			  console.log("Session requested!");
+              onSessionStarted(session);
+            });
+      }
+	  
+
+function onSessionStarted(xrSession) {
+
+      renderer = new THREE.WebGLRenderer({
+      alpha: true,
+      preserveDrawingBuffer: true,
+    });
+    renderer.autoClear = false;
+
+    gl = renderer.getContext();
+    
+    gl.setCompatibleXRDevice(xrSession.device);
+	//gl.makeXRCompatible();
+  
+    session.baseLayer = new XRWebGLLayer(xrSession, gl);
+
+    scene = new THREE.Scene();
+
+    camera = new THREE.PerspectiveCamera();
+    camera.matrixAutoUpdate = false;
+	var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+var cube = new THREE.Mesh( geometry, material );
+scene.add( cube );
+cube.position.z=4;
+
+  xrSession.requestReferenceSpace('local')
+  .then((refSpace) => {
+    xrRefSpace = refSpace;
+    xrSession.requestAnimationFrame(onXRFrame);
+  });
+}
+
+      function onXRFrame(t, frame) {
+        let session = frame.session;
+
+        let pose = frame.getViewerPose(xrRefSpace);
+
+        session.requestAnimationFrame(onXRFrame);
+		
+		// draw scene
+    gl.bindFramebuffer(gl.FRAMEBUFFER, session.baseLayer.framebuffer);
+
+    if (pose) {
+      for (let view of frame.views) {
+        const viewport = session.baseLayer.getViewport(view);
+        renderer.setSize(viewport.width, viewport.height);
+
+        camera.projectionMatrix.fromArray(view.projectionMatrix);
+        const viewMatrix = new THREE.Matrix4().fromArray(pose.getViewMatrix(view));
+        camera.matrix.getInverse(viewMatrix);
+        camera.updateMatrixWorld(true);
+
+        renderer.clearDepth();
+
+        renderer.render(scene, camera);
+      }
+    }
+
+      }  
+
+initAR();
+</script>
+</body>
+
+</html>
