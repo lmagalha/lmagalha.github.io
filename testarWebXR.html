@@ -34,9 +34,6 @@ function initAR()
       }
 	  
 function onSessionStarted(xrSession) {
-        if (xrSession.isImmersive) {
-          skybox.visible = false;
-        }
 
   xrSession.requestReferenceSpace('local-floor')
   .then((refSpace) => {
