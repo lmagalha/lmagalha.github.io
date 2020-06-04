@@ -14,17 +14,23 @@ function initAR()
         if (navigator.xr) {
           navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
             console.log("AR content is supported!");
+			
           })
 		  .catch((reason) => { console.log("AR content is not supported: " + reason); });
         }
-
-//supported = navigator.xr.isSessionSupported('immersive-ar');
-//if (supported) {
-// console.log("AR content is supported!");
-//} else {
-//console.log("AR content is not supported: ");
-//}
 }
+
+      function onRequestSession() {
+        // Requests an 'immersive-ar' session, which ensures that the users
+        // environment will be visible either via video passthrough or a
+        // transparent display. This may be presented either in a headset or
+        // fullscreen on a mobile device.
+        return navigator.xr.requestSession('immersive-ar')
+            .then((session) => {
+              session.isImmersive = true;
+              onSessionStarted(session);
+            });
+      }
 
 initAR();
 </script>
