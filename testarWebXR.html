@@ -9,7 +9,7 @@
 
 function initAR()
 {
-const supported = await navigator.xr.isSessionSupported('immersive-ar');
+supported = navigator.xr.isSessionSupported('immersive-ar');
 if (supported) {
  console.log("AR content is supported!");
 } else {
