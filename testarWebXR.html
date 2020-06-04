@@ -6,7 +6,7 @@
 <body>
 <script>
 
-
+let xrRefSpace=null;
 
 function initAR()
 {
@@ -32,6 +32,19 @@ function initAR()
               //onSessionStarted(session);
             });
       }
+	  
+function onSessionStarted(xrSession) {
+        if (session.isImmersive) {
+          skybox.visible = false;
+        }
+
+  xrSession.requestReferenceSpace('local-floor')
+  .then((refSpace) => {
+    xrRefSpace = refSpace;
+//    xrSession.requestAnimationFrame(onXRFrame);
+  });
+}
+	  
 
 initAR();
 </script>
