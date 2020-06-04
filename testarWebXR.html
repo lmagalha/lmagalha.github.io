@@ -38,9 +38,6 @@ function initAR()
 
 function onSessionStarted(xrSession) {
 
-  if (xrSession.isImmersive) {
-    removeBackground();
-  }
 
   let canvas = document.createElement('canvas');
   gl = canvas.getContext('webgl', { xrCompatible: true });
