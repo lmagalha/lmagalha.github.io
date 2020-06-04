@@ -52,7 +52,7 @@ function onSessionStarted(xrSession) {
     //gl.setCompatibleXRDevice(xrSession.device);
 	gl.makeXRCompatible();
   
-    session.baseLayer = new XRWebGLLayer(xrSession, gl);
+    xrSession.baseLayer = new XRWebGLLayer(xrSession, gl);
 
     scene = new THREE.Scene();
 
