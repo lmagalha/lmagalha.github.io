@@ -38,10 +38,20 @@ function onSessionStarted(xrSession) {
   xrSession.requestReferenceSpace('local-floor')
   .then((refSpace) => {
     xrRefSpace = refSpace;
-//    xrSession.requestAnimationFrame(onXRFrame);
+    xrSession.requestAnimationFrame(onXRFrame);
   });
 }
-	  
+
+      function onXRFrame(t, frame) {
+        let session = frame.session;
+
+        let pose = frame.getViewerPose(xrRefSpace);
+
+        session.requestAnimationFrame(onXRFrame);
+		
+		// draw scene
+
+      }  
 
 initAR();
 </script>
