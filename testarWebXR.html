@@ -43,7 +43,7 @@ function onSessionStarted(xrSession) {
   gl = canvas.getContext('webgl', { xrCompatible: true });
 
   xrSession.updateRenderState({
-    baseLayer: new XRWebGLLayer(session, gl)
+    baseLayer: new XRWebGLLayer(xrSession, gl)
   });
 
   xrSession.requestReferenceSpace('local')
