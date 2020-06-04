@@ -4,11 +4,25 @@
 </head>
 
 <body>
+
 <script>
 
+      import {WebXRButton} from './js/util/webxr-button.js';
+      import {Scene} from './js/render/scenes/scene.js';
+      import {Renderer, createWebGLContext} from './js/render/core/renderer.js';
+      import {SkyboxNode} from './js/render/nodes/skybox.js';
+      import {Gltf2Node} from './js/render/nodes/gltf2.js';
+	  
 let xrRefSpace=null;
 let gl=null;
 let renderer=null;
+
+      let scene = new Scene();
+      let solarSystem = new Gltf2Node({url: 'media/gltf/space/space.gltf'});
+      // The solar system is big (citation needed). Scale it down so that users
+      // can move around the planets more easily.
+      solarSystem.scale = [0.1, 0.1, 0.1];
+      scene.addNode(solarSystem);
 
 function initAR()
 {
@@ -35,12 +49,31 @@ function initAR()
             });
       }
 	  
+      function initGL() {
+        if (gl)
+          return;
 
+        gl = createWebGLContext({
+          xrCompatible: true
+        });
+        document.body.appendChild(gl.canvas);
+
+        function onResize() {
+          gl.canvas.width = gl.canvas.clientWidth * window.devicePixelRatio;
+          gl.canvas.height = gl.canvas.clientHeight * window.devicePixelRatio;
+        }
+        window.addEventListener('resize', onResize);
+        onResize();
+
+        renderer = new Renderer(gl);
+
+        scene.setRenderer(renderer);
+      }
+	  
 function onSessionStarted(xrSession) {
 
 
-  let canvas = document.createElement('canvas');
-  gl = canvas.getContext('webgl', { xrCompatible: true });
+    initGL();
 
   xrSession.updateRenderState({
     baseLayer: new XRWebGLLayer(xrSession, gl)
@@ -58,9 +91,13 @@ function onSessionStarted(xrSession) {
 
         let pose = frame.getViewerPose(xrRefSpace);
 
+        scene.startFrame();
+
         session.requestAnimationFrame(onXRFrame);
-		
-		// draw scene
+
+        scene.drawXRFrame(frame, pose);
+
+        scene.endFrame();
 
       }  
 
