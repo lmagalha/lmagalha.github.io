@@ -28,7 +28,8 @@ function initAR()
         return navigator.xr.requestSession('immersive-ar')
             .then((session) => {
               session.isImmersive = true;
-              onSessionStarted(session);
+			  console.log("Session requested!");
+              //onSessionStarted(session);
             });
       }
 
