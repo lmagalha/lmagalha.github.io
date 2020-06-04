@@ -7,14 +7,23 @@
 <script>
 
 
+
 function initAR()
 {
-supported = navigator.xr.isSessionSupported('immersive-ar');
-if (supported) {
- console.log("AR content is supported!");
-} else {
-console.log("AR content is not supported: ");
-}
+
+        if (navigator.xr) {
+          navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
+            console.log("AR content is supported!");
+          })
+		  .catch((reason) => { console.log("AR content is not supported: " + reason); });
+        }
+
+//supported = navigator.xr.isSessionSupported('immersive-ar');
+//if (supported) {
+// console.log("AR content is supported!");
+//} else {
+//console.log("AR content is not supported: ");
+//}
 }
 
 initAR();
