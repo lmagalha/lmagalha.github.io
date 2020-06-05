@@ -39,21 +39,22 @@ let renderer=null;
       scene.addNode(skybox);
 function initAR()
 {
- //       xrButton = new WebXRButton({
- //         onRequestSession: onRequestSession,
- //         onEndSession: onEndSession,
- //         textEnterXRTitle: "START AR",
- //         textXRNotFoundTitle: "AR NOT FOUND",
- //         textExitXRTitle: "EXIT  AR",
- //       });
-//		document.querySelector('header').appendChild(xrButton.domElement);
+        xrButton = new WebXRButton({
+          onRequestSession: onRequestSession,
+          onEndSession: onEndSession,
+          textEnterXRTitle: "START AR",
+          textXRNotFoundTitle: "AR NOT FOUND",
+          textExitXRTitle: "EXIT  AR",
+        });
+		document.querySelector('header').appendChild(xrButton.domElement);
         if (navigator.xr) {
           navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
             console.log("AR content is supported!");
-			onRequestSession();
-			//xrButton.enabled = supported;
+			//onRequestSession();
+			xrButton.enabled = supported;
           })
 		  .catch((reason) => { console.log("AR content is not supported: " + reason); });
+		  navigator.xr.requestSession('inline').then(onSessionStarted);
         }
 }
 
@@ -64,7 +65,7 @@ function initAR()
         // fullscreen on a mobile device.
         return navigator.xr.requestSession('immersive-ar')
             .then((session) => {
-			//xrButton.setSession(session);
+			  xrButton.setSession(session);
               session.isImmersive = true;
 			  console.log("Session requested!");
               onSessionStarted(session);
@@ -92,28 +93,28 @@ function initAR()
         scene.setRenderer(renderer);
       }
 	  
-function onSessionStarted(xrSession) {
-       xrSession.addEventListener('end', onSessionEnded);
-        if (xrSession.isImmersive) {
+function onSessionStarted(session) {
+       session.addEventListener('end', onSessionEnded);
+        if (session.isImmersive) {
           // When in 'immersive-ar' mode don't draw an opaque background because
           // we want the real world to show through.
           skybox.visible = false;
         }
     initGL();
 
-  xrSession.updateRenderState({
-    baseLayer: new XRWebGLLayer(xrSession, gl)
+  session.updateRenderState({
+    baseLayer: new XRWebGLLayer(session, gl)
   });
 
-  xrSession.requestReferenceSpace('local')
-  .then((refSpace) => {
+  let refSpaceType = session.isImmersive ? 'local' : 'viewer';
+  session.requestReferenceSpace(refSpaceType).then((refSpace) => {
     //xrRefSpace = refSpace;
-          if (xrSession.isImmersive) {
+          if (session.isImmersive) {
             xrRefSpace = refSpace;
           } else {
             inlineViewerHelper = new InlineViewerHelper(gl.canvas, refSpace);
           }	
-    xrSession.requestAnimationFrame(onXRFrame);
+    session.requestAnimationFrame(onXRFrame);
   });
 }
 
@@ -123,7 +124,7 @@ function onSessionStarted(xrSession) {
 
       function onSessionEnded(event) {
         if (event.session.isImmersive) {
-         // xrButton.setSession(null);
+          xrButton.setSession(null);
           // Turn the background back on when we go back to the inlive view.
           skybox.visible = true;
         }
