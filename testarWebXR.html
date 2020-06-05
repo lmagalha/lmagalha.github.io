@@ -91,7 +91,7 @@ function initAR()
 	  
 function onSessionStarted(xrSession) {
        xrSession.addEventListener('end', onSessionEnded);
-        if (session.isImmersive) {
+        if (xRSession.isImmersive) {
           // When in 'immersive-ar' mode don't draw an opaque background because
           // we want the real world to show through.
           skybox.visible = false;
