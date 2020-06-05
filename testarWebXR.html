@@ -89,7 +89,7 @@ function initAR()
       }
 	  
 function onSessionStarted(xrSession) {
-       session.addEventListener('end', onSessionEnded);
+       xrSession.addEventListener('end', onSessionEnded);
 
     initGL();
 
