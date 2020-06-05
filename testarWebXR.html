@@ -15,6 +15,12 @@
       import {Renderer, createWebGLContext} from './js/render/core/renderer.js';
       import {SkyboxNode} from './js/render/nodes/skybox.js';
       import {Gltf2Node} from './js/render/nodes/gltf2.js';
+	        import {QueryArgs} from './js/util/query-args.js';
+			
+			      import WebXRPolyfill from './js/third-party/webxr-polyfill/build/webxr-polyfill.module.js';
+      if (QueryArgs.getBool('usePolyfill', true)) {
+        let polyfill = new WebXRPolyfill();
+      }
 let xrButton = null;	  
 let xrRefSpace=null;
 let gl=null;
