@@ -35,19 +35,19 @@ let renderer=null;
 
 function initAR()
 {
-        xrButton = new WebXRButton({
-          onRequestSession: onRequestSession,
-          onEndSession: onEndSession,
-          textEnterXRTitle: "START AR",
-          textXRNotFoundTitle: "AR NOT FOUND",
-          textExitXRTitle: "EXIT  AR",
-        });
-		document.querySelector('header').appendChild(xrButton.domElement);
+ //       xrButton = new WebXRButton({
+ //         onRequestSession: onRequestSession,
+ //         onEndSession: onEndSession,
+ //         textEnterXRTitle: "START AR",
+ //         textXRNotFoundTitle: "AR NOT FOUND",
+ //         textExitXRTitle: "EXIT  AR",
+ //       });
+//		document.querySelector('header').appendChild(xrButton.domElement);
         if (navigator.xr) {
           navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
             console.log("AR content is supported!");
-			//onRequestSession();
-			xrButton.enabled = supported;
+			onRequestSession();
+			//xrButton.enabled = supported;
           })
 		  .catch((reason) => { console.log("AR content is not supported: " + reason); });
         }
@@ -60,7 +60,7 @@ function initAR()
         // fullscreen on a mobile device.
         return navigator.xr.requestSession('immersive-ar')
             .then((session) => {
-			xrButton.setSession(session);
+			//xrButton.setSession(session);
               session.isImmersive = true;
 			  console.log("Session requested!");
               onSessionStarted(session);
@@ -110,7 +110,7 @@ function onSessionStarted(xrSession) {
 
       function onSessionEnded(event) {
         if (event.session.isImmersive) {
-          xrButton.setSession(null);
+         // xrButton.setSession(null);
           // Turn the background back on when we go back to the inlive view.
          // skybox.visible = true;
         }
