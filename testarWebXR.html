@@ -46,7 +46,7 @@ function initAR()
         //  textXRNotFoundTitle: "AR NOT FOUND",
         //  textExitXRTitle: "EXIT  AR",
       //  });
-		document.querySelector('header').appendChild(xrButton.domElement);
+		//document.querySelector('header').appendChild(xrButton.domElement);
         if (navigator.xr) {
           navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
             console.log("AR content is supported!");
