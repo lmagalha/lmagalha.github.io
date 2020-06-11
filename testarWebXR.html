@@ -35,8 +35,8 @@ let renderer=null;
       // can move around the planets more easily.
       solarSystem.scale = [0.1, 0.1, 0.1];
       scene.addNode(solarSystem);
-      let skybox = new SkyboxNode({url: 'media/textures/milky-way-4k.png'});
-      scene.addNode(skybox);
+     // let skybox = new SkyboxNode({url: 'media/textures/milky-way-4k.png'});
+     // scene.addNode(skybox);
 function initAR()
 {
         xrButton = new WebXRButton({
@@ -98,7 +98,7 @@ function onSessionStarted(session) {
         if (session.isImmersive) {
           // When in 'immersive-ar' mode don't draw an opaque background because
           // we want the real world to show through.
-          skybox.visible = false;
+       //   skybox.visible = false;
         }
     initGL();
 
@@ -127,7 +127,7 @@ function onSessionStarted(session) {
         if (event.session.isImmersive) {
           xrButton.setSession(null);
           // Turn the background back on when we go back to the inlive view.
-          skybox.visible = true;
+        //  skybox.visible = true;
         }
       }
 
