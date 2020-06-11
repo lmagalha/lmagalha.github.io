@@ -29,7 +29,7 @@ function initAR()
         if (navigator.xr) {
           navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
             console.log("AR content is supported!");
-			xrButton=supported;
+			xrButton.enabled=supported;
 			//onRequestSession();
           })
 		  .catch((reason) => { console.log("AR content is not supported: " + reason); });
