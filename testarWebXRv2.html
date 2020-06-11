@@ -78,7 +78,7 @@ cube.position.z=4;
 
   xrSession.requestReferenceSpace('local')
   .then((refSpace) => {
-    if (session.isImmersive) {
+    if (xrSession.isImmersive) {
             xrRefSpace = refSpace;
           }
     xrSession.requestAnimationFrame(onXRFrame);
