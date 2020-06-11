@@ -5,21 +5,30 @@
 
 <body>
 <script src="./js/three.js"></script>
-<script>
-
+<script type="module">
+      import {WebXRButton} from './js/util/webxr-button.js';
 let xrRefSpace=null;
 let gl=null;
 let renderer=null;
 let scene=null;
 let camera=null;
+let xrButton = null;
 
 function initAR()
 {
-
+        xrButton = new WebXRButton({
+          onRequestSession: onRequestSession,
+          onEndSession: onEndSession,
+          textEnterXRTitle: "START AR",
+          textXRNotFoundTitle: "AR NOT FOUND",
+          textExitXRTitle: "EXIT  AR",
+        });
+		document.querySelector('header').appendChild(xrButton.domElement);
         if (navigator.xr) {
           navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
             console.log("AR content is supported!");
-			onRequestSession();
+			xrButton=supported;
+			//onRequestSession();
           })
 		  .catch((reason) => { console.log("AR content is not supported: " + reason); });
         }
@@ -30,8 +39,9 @@ function initAR()
         // environment will be visible either via video passthrough or a
         // transparent display. This may be presented either in a headset or
         // fullscreen on a mobile device.
-        navigator.xr.requestSession('immersive-ar')
+        return navigator.xr.requestSession('immersive-ar')
             .then((session) => {
+			xrButton.setSession(session);
               session.isImmersive = true;
 			  console.log("Session requested!");
               onSessionStarted(session);
@@ -40,7 +50,7 @@ function initAR()
 	  
 
 function onSessionStarted(xrSession) {
-
+      xrSession.addEventListener('end', onSessionEnded);
       renderer = new THREE.WebGLRenderer({
       alpha: true,
       preserveDrawingBuffer: true,
@@ -66,10 +76,24 @@ cube.position.z=4;
 
   xrSession.requestReferenceSpace('local')
   .then((refSpace) => {
-    xrRefSpace = refSpace;
+    if (session.isImmersive) {
+            xrRefSpace = refSpace;
+          }
     xrSession.requestAnimationFrame(onXRFrame);
   });
 }
+
+      function onEndSession(session) {
+        session.end();
+      }
+
+      function onSessionEnded(event) {
+        if (event.session.isImmersive) {
+          xrButton.setSession(null);
+          // Turn the background back on when we go back to the inlive view.
+        //  skybox.visible = true;
+        }
+      }
 
       function onXRFrame(t, frame) {
         let session = frame.session;
