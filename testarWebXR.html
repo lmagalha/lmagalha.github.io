@@ -54,7 +54,7 @@ function initAR()
 			xrButton.enabled = supported;
           })
 		  .catch((reason) => { console.log("AR content is not supported: " + reason); });
-		  navigator.xr.requestSession('inline').then(onSessionStarted);
+		//  navigator.xr.requestSession('inline').then(onSessionStarted);
         }
 }
 
