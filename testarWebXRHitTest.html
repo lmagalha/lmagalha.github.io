@@ -151,7 +151,7 @@ function onSessionStarted(session) {
 	  
       function onXRFrame(t, frame) {
         let session = frame.session;
-        let pose = frame.getViewerPose(refSpace);
+        let pose = frame.getViewerPose(xrRefSpace);
 
         reticle.visible = false;
 
@@ -160,7 +160,7 @@ function onSessionStarted(session) {
         if (xrHitTestSource && pose) {
           let hitTestResults = frame.getHitTestResults(xrHitTestSource);
           if (hitTestResults.length > 0) {
-            let pose = hitTestResults[0].getPose(refSpace);
+            let pose = hitTestResults[0].getPose(xrRefSpace);
             reticle.visible = true;
             reticle.matrix = pose.transform.matrix;
           }
