@@ -16,6 +16,8 @@
       import {Renderer, createWebGLContext} from './js/render/core/renderer.js';
       import {Gltf2Node} from './js/render/nodes/gltf2.js';
 	  import {Node} from './js/render/core/node.js';
+	  import {vec3} from './js/render/math/gl-matrix.js';
+      import {Ray} from './js/render/math/ray.js';
 	       			
 let xrButton = null;
 let inlineViewerHelper = null;	  
@@ -143,6 +145,8 @@ function onSessionStarted(session) {
         scene.addNode(newObject);
       }
 	  
+      let rayOrigin = vec3.create();
+      let rayDirection = vec3.create();	  
       function onSelect(event) {
         if (reticle.visible) {
           // The reticle should already be positioned at the latest hit point, 
