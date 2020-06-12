@@ -26,9 +26,11 @@ let renderer=null;
 let xrHitTestSource = null;
 
       let scene = new Scene();
+	  scene.enableStats(false);
 
 	  let cena = new Gltf2Node({url: 'media/gltf/scene.gltf'});
-	  let Object = new Node();
+	  let Objecto = new Node();
+	  Objecto.addNode(cena);
 
       let reticle = new Gltf2Node({url: 'media/gltf/reticle/reticle.gltf'});
       reticle.visible = false;
@@ -134,7 +136,7 @@ function onSessionStarted(session) {
       }
 
       function addARObjectAt(matrix) {
-        let newObject = Object.clone();
+        let newObject = Objecto.clone();
         newObject.visible = true;
         newObject.matrix = matrix;
         scene.addNode(newObject);
