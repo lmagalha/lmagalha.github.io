@@ -1,0 +1,182 @@
+<html>
+<head>
+    <meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no'>
+    <meta name='mobile-web-app-capable' content='yes'>
+    <meta name='apple-mobile-web-app-capable' content='yes'>
+	<link rel='stylesheet' href='css/common.css'>
+</head>
+
+<body>
+   <header>
+      </header>
+<script type="module">
+
+      import {WebXRButton} from './js/util/webxr-button.js';
+      import {Scene} from './js/render/scenes/scene.js';
+      import {Renderer, createWebGLContext} from './js/render/core/renderer.js';
+      import {Gltf2Node} from './js/render/nodes/gltf2.js';
+	  import {Node} from './js/render/core/node.js';
+	       			
+let xrButton = null;
+let inlineViewerHelper = null;	  
+let xrRefSpace=null;
+let xrViewerSpace=null;
+let gl=null;
+let renderer=null;
+let xrHitTestSource = null;
+
+      let scene = new Scene();
+
+	  let cena = new Gltf2Node({url: 'media/gltf/scene.gltf'});
+	  let Object = new Node();
+
+      let reticle = new Gltf2Node({url: 'media/gltf/reticle/reticle.gltf'});
+      reticle.visible = false;
+      scene.addNode(reticle);
+	  
+function initAR()
+{
+        xrButton = new WebXRButton({
+          onRequestSession: onRequestSession,
+          onEndSession: onEndSession,
+          textEnterXRTitle: "START AR",
+          textXRNotFoundTitle: "AR NOT FOUND",
+          textExitXRTitle: "EXIT  AR",
+        });
+		document.querySelector('header').appendChild(xrButton.domElement);
+        if (navigator.xr) {
+          navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
+            console.log("AR content is supported!");
+			//onRequestSession();
+			xrButton.enabled = supported;
+          })
+		  .catch((reason) => { console.log("AR content is not supported: " + reason); });
+		//  navigator.xr.requestSession('inline').then(onSessionStarted);
+        }
+}
+
+      function onRequestSession() {
+        // Requests an 'immersive-ar' session, which ensures that the users
+        // environment will be visible either via video passthrough or a
+        // transparent display. This may be presented either in a headset or
+        // fullscreen on a mobile device.
+        return navigator.xr.requestSession('immersive-ar',{requiredFeatures: ['local', 'hit-test']})
+            .then((session) => {
+			  xrButton.setSession(session);
+              session.isImmersive = true;
+			  console.log("Session requested!");
+              onSessionStarted(session);
+            });
+      }
+	  
+      function initGL() {
+        if (gl)
+          return;
+
+        gl = createWebGLContext({
+          xrCompatible: true
+        });
+        document.body.appendChild(gl.canvas);
+
+        function onResize() {
+          gl.canvas.width = gl.canvas.clientWidth * window.devicePixelRatio;
+          gl.canvas.height = gl.canvas.clientHeight * window.devicePixelRatio;
+        }
+        window.addEventListener('resize', onResize);
+        onResize();
+
+        renderer = new Renderer(gl);
+
+        scene.setRenderer(renderer);
+      }
+	  
+function onSessionStarted(session) {
+       session.addEventListener('end', onSessionEnded);
+	   session.addEventListener('select', onSelect);
+        if (session.isImmersive) {
+          // When in 'immersive-ar' mode don't draw an opaque background because
+          // we want the real world to show through.
+       //   skybox.visible = false;
+        }
+    initGL();
+
+  session.updateRenderState({
+    baseLayer: new XRWebGLLayer(session, gl)
+  });
+        session.requestReferenceSpace('viewer').then((refSpace) => {
+          xrViewerSpace = refSpace;
+          session.requestHitTestSource({ space: xrViewerSpace }).then((hitTestSource) => {
+            xrHitTestSource = hitTestSource;
+          });
+        });
+
+    session.requestReferenceSpace('local').then((refSpace) => {
+          if (session.isImmersive) {
+            xrRefSpace = refSpace;
+          } 
+    session.requestAnimationFrame(onXRFrame);
+  });
+}
+
+      function onEndSession(session) {
+        xrHitTestSource.cancel();
+        xrHitTestSource = null;
+		session.end();
+      }
+
+      function onSessionEnded(event) {
+        if (event.session.isImmersive) {
+          xrButton.setSession(null);
+          // Turn the background back on when we go back to the inlive view.
+        //  skybox.visible = true;
+        }
+      }
+
+      function addARObjectAt(matrix) {
+        let newObject = Object.clone();
+        newObject.visible = true;
+        newObject.matrix = matrix;
+        scene.addNode(newObject);
+      }
+	  
+      function onSelect(event) {
+        if (reticle.visible) {
+          // The reticle should already be positioned at the latest hit point, 
+          // so we can just use it's matrix to save an unnecessary call to 
+          // event.frame.getHitTestResults.
+          addARObjectAt(reticle.matrix);
+        }
+      }
+	  
+      function onXRFrame(t, frame) {
+        let session = frame.session;
+        let pose = frame.getViewerPose(refSpace);
+
+        reticle.visible = false;
+
+        // If we have a hit test source, get its results for the frame
+        // and use the pose to display a reticle in the scene.
+        if (xrHitTestSource && pose) {
+          let hitTestResults = frame.getHitTestResults(xrHitTestSource);
+          if (hitTestResults.length > 0) {
+            let pose = hitTestResults[0].getPose(refSpace);
+            reticle.visible = true;
+            reticle.matrix = pose.transform.matrix;
+          }
+        }
+		
+        scene.startFrame();
+
+        session.requestAnimationFrame(onXRFrame);
+
+        scene.drawXRFrame(frame, pose);
+
+        scene.endFrame();
+
+      }  
+
+initAR();
+</script>
+</body>
+
+</html>
