@@ -35,6 +35,7 @@ let xrHitTestSource = null;
 	  let Objecto = new Node();
 	  Objecto.addNode(cena);
 	  scene.addNode(Objecto);
+	  Objecto.visible = false;
 
       let reticle = new Gltf2Node({url: 'media/gltf/reticle/reticle.gltf'});
       reticle.visible = false;
@@ -83,14 +84,14 @@ function initAR()
         gl = createWebGLContext({
           xrCompatible: true
         });
-        document.body.appendChild(gl.canvas);
+        //document.body.appendChild(gl.canvas);
 
-        function onResize() {
+        /*function onResize() {
           gl.canvas.width = gl.canvas.clientWidth * window.devicePixelRatio;
           gl.canvas.height = gl.canvas.clientHeight * window.devicePixelRatio;
         }
         window.addEventListener('resize', onResize);
-        onResize();
+        onResize();*/
 
         renderer = new Renderer(gl);
 
