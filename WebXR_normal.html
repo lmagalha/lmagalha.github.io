@@ -70,14 +70,20 @@ function initGL() {
         scene.setRenderer(renderer);
 }
 	  
-function onSessionStarted(session) {
+function onSessionStarted(xrSession) {
 
     initGL();
 
   session.updateRenderState({
-    baseLayer: new XRWebGLLayer(session, gl)
+    baseLayer: new XRWebGLLayer(xrSession, gl)
   });
- 
+
+  xrSession.requestReferenceSpace('local')
+  .then((refSpace) => {
+    xrRefSpace = refSpace;
+    xrSession.requestAnimationFrame(onXRFrame);
+  });
+  
  
 }
 
