@@ -75,7 +75,7 @@ function onSessionStarted(xrSession) {
 
     initGL();
 
-  session.updateRenderState({
+  xrSession.updateRenderState({
     baseLayer: new XRWebGLLayer(xrSession, gl)
   });
 
