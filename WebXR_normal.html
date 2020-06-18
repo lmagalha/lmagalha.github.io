@@ -44,6 +44,14 @@ if (navigator.xr) {
 
 function onRequestSession() {
 
+      return navigator.xr.requestSession('immersive-ar')
+            .then((session) => {
+	     xrButton.setSession(session);
+              session.isImmersive = true;
+              //console.log("Session requested!");
+              onSessionStarted(session);
+            });
+
 }
 	  
 function initGL() {
