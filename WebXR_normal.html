@@ -104,6 +104,8 @@ function onSessionStarted(xrSession) {
       function onXRFrame(t, frame) {
 		let session = frame.session;
 		
+		let pose = frame.getViewerPose(xrRefSpace);
+		
         scene.startFrame();
 
         session.requestAnimationFrame(onXRFrame);
