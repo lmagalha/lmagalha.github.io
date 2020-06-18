@@ -21,7 +21,24 @@ let scene = new Scene();
 	  
 function initAR()
 {
+xrButton = new WebXRButton({
+          onRequestSession: onRequestSession,
+          onEndSession: onEndSession,
+          textEnterXRTitle: "START AR",
+          textXRNotFoundTitle: "AR NOT FOUND",
+          textExitXRTitle: "EXIT  AR",
+        });
+document.querySelector('header').appendChild(xrButton.domElement);
 
+if (navigator.xr) {
+          navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
+            // immersive-ar is supported
+	    xrButton.enabled = supported;
+          })
+		  .catch((reason) => {
+           // immersive-ar is not supported
+	    });
+        }
 
 }
 
