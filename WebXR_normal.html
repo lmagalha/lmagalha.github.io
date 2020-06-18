@@ -37,7 +37,8 @@ document.querySelector('header').appendChild(xrButton.domElement);
 if (navigator.xr) {
           navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
             // immersive-ar is supported
-	    xrButton.enabled = supported;
+	    console.log("AR content is supported!");
+		xrButton.enabled = supported;
           })
 		  .catch((reason) => {
            // immersive-ar is not supported
@@ -52,7 +53,7 @@ function onRequestSession() {
             .then((session) => {
 	     xrButton.setSession(session);
               session.isImmersive = true;
-              //console.log("Session requested!");
+              console.log("Session requested!");
               onSessionStarted(session);
             });
 
