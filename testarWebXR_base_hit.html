@@ -75,7 +75,7 @@ function initGL() {
 }
 	  
 function onSessionStarted(session) {
-
+session.addEventListener('select', onSelect);
     initGL();
 
   session.updateRenderState({
@@ -96,6 +96,20 @@ function onSessionStarted(session) {
 
  
 }
+
+      function onSelect(event) {
+        if (reticle.visible) {
+          addObject(reticle.matrix);
+        }
+      }
+     
+	 function addObject(matrix) {
+        let newObject = cena.clone();
+        newObject.visible = true;
+        newObject.matrix = matrix;
+        scene.addNode(newObject);
+      }
+
 
       function onEndSession(session) {
         xrHitTestSource.cancel();
