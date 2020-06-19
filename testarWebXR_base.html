@@ -74,7 +74,7 @@ function onSessionStarted(session) {
     baseLayer: new XRWebGLLayer(session, gl)
   });
  
-   xrSession.requestReferenceSpace('local')
+   session.requestReferenceSpace('local')
   .then((refSpace) => {
     xrRefSpace = refSpace;
     xrSession.requestAnimationFrame(onXRFrame);
