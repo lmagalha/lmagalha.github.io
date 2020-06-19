@@ -1,0 +1,140 @@
+<html>
+<head>
+</head>
+
+<body>
+   <header>
+      </header>
+<script type="module">
+
+      import {WebXRButton} from './js/util/webxr-button.js';
+      import {Scene} from './js/render/scenes/scene.js';
+      import {Renderer, createWebGLContext} from './js/render/core/renderer.js';
+      import {Gltf2Node} from './js/render/nodes/gltf2.js';
+	  import {Node} from './js/render/core/node.js';
+
+let xrButton = null;
+let xrViewerSpace=null;
+let xrRefSpace=null;
+let xrHitTestSource=null;
+let gl=null;
+let renderer=null;
+let scene = new Scene();	  
+let cena = new Gltf2Node({url: 'scene3.gltf'});
+cena.visible=false;
+scene.addNode(cena);
+ let reticle = new Gltf2Node({url: 'media/gltf/reticle/reticle.gltf'});
+ reticle.visible = false;
+ scene.addNode(reticle);
+	  
+function initAR()
+{
+
+xrButton = new WebXRButton({
+          onRequestSession: onRequestSession,
+          onEndSession: onEndSession,
+          textEnterXRTitle: "START AR",
+          textXRNotFoundTitle: "AR NOT FOUND",
+          textExitXRTitle: "EXIT  AR",
+        });
+document.querySelector('header').appendChild(xrButton.domElement);
+ if (navigator.xr) {
+          navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
+            // immersive-ar is supported
+			console.log("AR content is supported!");
+	    xrButton.enabled = supported;
+          })
+		  .catch((reason) => {
+           // immersive-ar is not supported
+	    });
+        }
+
+
+}
+
+function onRequestSession() {
+      return navigator.xr.requestSession('immersive-ar',{requiredFeatures: ['local', 'hit-test']})
+            .then((session) => {
+	     xrButton.setSession(session);
+              session.isImmersive = true;
+              //console.log("Session requested!");
+              onSessionStarted(session);
+            });
+}
+	  
+function initGL() {
+        if (gl)
+          return;
+
+        gl = createWebGLContext({
+          xrCompatible: true
+        });
+        renderer = new Renderer(gl);
+
+        scene.setRenderer(renderer);
+}
+	  
+function onSessionStarted(session) {
+
+    initGL();
+
+  session.updateRenderState({
+    baseLayer: new XRWebGLLayer(session, gl)
+  });
+ 
+   session.requestReferenceSpace('local')
+  .then((refSpace) => {
+    xrRefSpace = refSpace;
+    session.requestAnimationFrame(onXRFrame);
+  });
+   session.requestReferenceSpace('viewer').then((refSpace) => {
+          xrViewerSpace = refSpace;
+          session.requestHitTestSource({ space: xrViewerSpace }).then((hitTestSource) => {
+            xrHitTestSource = hitTestSource;
+          });
+        });
+
+ 
+}
+
+      function onEndSession(session) {
+        xrHitTestSource.cancel();
+        xrHitTestSource = null;
+		session.end();
+      }
+
+      function onSessionEnded(event) {
+        if (event.session.isImmersive) {
+          xrButton.setSession(null);
+        }
+      }
+
+ 
+      function onXRFrame(t, frame) {
+        let session = frame.session;
+        let pose = frame.getViewerPose(xrRefSpace);
+		reticle.visible = false;
+        if (xrHitTestSource && pose) {
+          let hitTestResults = frame.getHitTestResults(xrHitTestSource);
+          if (hitTestResults.length > 0) {
+            let pose = hitTestResults[0].getPose(xrRefSpace);
+            reticle.visible = true;
+            reticle.matrix = pose.transform.matrix;
+          }
+        }
+
+        scene.startFrame();
+
+        session.requestAnimationFrame(onXRFrame);
+
+        scene.drawXRFrame(frame, pose);
+
+        scene.endFrame();
+
+      }  
+
+initAR();
+</script>
+</body>
+
+</html>
