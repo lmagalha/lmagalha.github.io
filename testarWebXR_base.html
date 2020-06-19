@@ -77,7 +77,7 @@ function onSessionStarted(session) {
    session.requestReferenceSpace('local')
   .then((refSpace) => {
     xrRefSpace = refSpace;
-    xrSession.requestAnimationFrame(onXRFrame);
+    session.requestAnimationFrame(onXRFrame);
   });
 
  
